@@ -5,19 +5,19 @@ import ruleRoute from './routes/rules';
 import urlRoute from './routes/urls';
 
 
-const server: Application = express();
+const app: Application = express();
 const PORT = process.env.PORT || 5000;
 
-server.use('/api/firewall/ip', ipRoute);
-server.use('/api/firewall/port', portRoute);
-server.use('/api/firewall/rule', ruleRoute);
-server.use('/api/firewall/url', urlRoute);
+app.use('/api/firewall/ip', ipRoute);
+app.use('/api/firewall/port', portRoute);
+app.use('/api/firewall/rule', ruleRoute);
+app.use('/api/firewall/url', urlRoute);
 
-server.get('/', (req: Request, res: Response) => {
+app.get('/', (req: Request, res: Response) => {
   res.send('Hello World!');
 });
 
 
-server.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
