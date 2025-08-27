@@ -1,0 +1,6 @@
+
+# the basics
+node_modules/
+dist/
+.env
+
