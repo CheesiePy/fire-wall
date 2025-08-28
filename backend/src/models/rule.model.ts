@@ -33,29 +33,61 @@ export const generateAndStoreRules = async () => {
   const rules = result.rows[0].full_rule_set;
 
   // Store the generated rules in the database
-  await pool.query('INSERT INTO rules (rule_set) VALUES ($1)', [rules]);
+    await pool.query(`INSERT INTO rules (id, rule_set) VALUES (1, $1) ON CONFLICT (id) DO UPDATE SET rule_set = $1;`, [rules]);
 };
+
+
 
 
 // Function to get all rules
 export const getAllRulesService = async () => {
-    const result = await pool.query('SELECT * FROM rules');
-    return result;
+  await generateAndStoreRules();
+  const result = await pool.query('SELECT * FROM rules');
+  return result;
 };
 
-export const updateRulesService = async (rule_set : object) => {
-  /**
-   * rule_set looks like this :
-   *  {
-   *  urls: {'ids' : [], 'mode': 'blacklist'/ 'whitelist', 'active': false/true},
-   *  ports: {'ids' : [], 'mode': 'blacklist'/ 'whitelist', 'active': false/true},
-   *  ips: {'ids' : [], 'mode': 'blacklist'/ 'whitelist', 'active': false/true}
-   * }
-   */
+export const updateRulesService = async (rule_set: any) => {
 
 
+    const updated = [];
+
+    const ruleTypes: { [key: string]: string } = {
+        ips: 'ip',
+        urls: 'url',
+        ports: 'port',
+    };
+
+    for (const ruleType in rule_set) {
+        if (Object.prototype.hasOwnProperty.call(rule_set, ruleType) && ruleTypes[ruleType]) {
+            const { ids, mode, active } = rule_set[ruleType];
+
+            if (!ids || ids.length === 0 || !mode || typeof active !== 'boolean') {
+                continue;
+            }
+
+            const columnToUpdate = mode === 'blacklist' ? 'is_blacklisted' : 'is_whitelisted';
+            const tableName = ruleType;
+            const valueColumn = ruleTypes[ruleType];
+
+            const query = `
+              UPDATE ${tableName}
+              SET ${columnToUpdate} = $1
+              WHERE id = ANY($2::int[])
+              RETURNING id, ${valueColumn} AS value;
+              `;
+
+            const result = await pool.query(query, [active, ids]);
+            for (const row of result.rows) {
+                updated.push({ ...row, active });
+            }
+        }
+    }
+
+    // After updating the individual tables, regenerate and store the consolidated rules
+    await generateAndStoreRules();
+
+    return { updated };
 };
-
 
 
 /**
