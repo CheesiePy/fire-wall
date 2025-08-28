@@ -1,24 +1,59 @@
 import pool from '../config/db';
 
+
+const GENERATE_RULES_QUERY = `
+  WITH generated_rules AS (
+    SELECT
+      json_build_object(
+        'ips', (
+          SELECT json_build_object(
+            'blacklist', COALESCE(json_agg(json_build_object('id', id, 'value', ip)) FILTER (WHERE is_blacklisted = TRUE), '[]'::json),
+            'whitelist', COALESCE(json_agg(json_build_object('id', id, 'value', ip)) FILTER (WHERE is_whitelisted = TRUE), '[]'::json)
+          ) FROM ips
+        ),
+        'urls', (
+          SELECT json_build_object(
+            'blacklist', COALESCE(json_agg(json_build_object('id', id, 'value', url)) FILTER (WHERE is_blacklisted = TRUE), '[]'::json),
+            'whitelist', COALESCE(json_agg(json_build_object('id', id, 'value', url)) FILTER (WHERE is_whitelisted = TRUE), '[]'::json)
+          ) FROM urls
+        ),
+        'ports', (
+          SELECT json_build_object(
+            'blacklist', COALESCE(json_agg(json_build_object('id', id, 'value', port)) FILTER (WHERE is_blacklisted = TRUE), '[]'::json),
+            'whitelist', COALESCE(json_agg(json_build_object('id', id, 'value', port)) FILTER (WHERE is_whitelisted = TRUE), '[]'::json)
+          ) FROM ports
+        )
+      ) AS full_rule_set
+  )
+  SELECT full_rule_set FROM generated_rules;
+`;
+
+export const generateAndStoreRules = async () => {
+  const result = await pool.query(GENERATE_RULES_QUERY);
+  const rules = result.rows[0].full_rule_set;
+
+  // Store the generated rules in the database
+  await pool.query('INSERT INTO rules (rule_set) VALUES ($1)', [rules]);
+};
+
+
 // Function to get all rules
 export const getAllRulesService = async () => {
     const result = await pool.query('SELECT * FROM rules');
     return result;
 };
 
-export const updateRuleService = async (rules : object[], list: string, ids: number[], active: boolean) => {
-    const updatedRules = [];
-    for (const rule of rules) {
-        const { id, value } = rule as { id: number, value: string | number };
-        const result = await pool.query(
-            'UPDATE rules SET value = $1, active = $2 WHERE id = $3 RETURNING *',
-            [value, active, id]
-        );
-        if (result.rowCount !== null && result.rowCount > 0) {
-            updatedRules.push(result.rows[0]);
-        }
-    }
-    return updatedRules;
+export const updateRulesService = async (rule_set : object) => {
+  /**
+   * rule_set looks like this :
+   *  {
+   *  urls: {'ids' : [], 'mode': 'blacklist'/ 'whitelist', 'active': false/true},
+   *  ports: {'ids' : [], 'mode': 'blacklist'/ 'whitelist', 'active': false/true},
+   *  ips: {'ids' : [], 'mode': 'blacklist'/ 'whitelist', 'active': false/true}
+   * }
+   */
+
+
 };
 
 

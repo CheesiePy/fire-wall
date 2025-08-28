@@ -14,6 +14,8 @@ const pool = new Pool({
 
 console.log('Database connection pool created');
 
+
+
 pool.on('connect', () => {
     console.log('Connected to the database');
 });

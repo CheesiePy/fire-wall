@@ -1,7 +1,7 @@
 import express , {Application, Request, Response, NextFunction} from 'express';
 import ipRoute from './routes/ips';
 import portRoute from './routes/ports';
-import ruleRoute from './routes/rules';
+import rulesRoute from './routes/rules';
 import urlRoute from './routes/urls';
 import cors from 'cors';
 
@@ -22,8 +22,10 @@ app.use(cors());
 // routes
 app.use('/api/firewall/ip', ipRoute);
 app.use('/api/firewall/port', portRoute);
-app.use('/api/firewall/rule', ruleRoute);
 app.use('/api/firewall/url', urlRoute);
+
+app.use('/api/firewall/rules', rulesRoute);
+
 
 // app.get('/', (req: Request, res: Response) => {
 //   res.send('Hello World!');

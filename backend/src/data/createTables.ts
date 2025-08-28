@@ -42,11 +42,24 @@ const createPortTable = async () => {
   await pool.query(query);
 };
 
+const createRulesTable = async () => {
+  const query = `
+    CREATE TABLE IF NOT EXISTS rules (
+        id SERIAL PRIMARY KEY,
+        rule_set JSONB NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  `;
+  await pool.query(query);
+  console.log("Rules table created");
+}
+
 export const createTables = async () => {
   try{
     await createIpTable();
     await createUrlTable();
     await createPortTable();
+    await createRulesTable();
     console.log("All tables created successfully");
   } catch (error) {
     console.error("Error creating tables:", error);

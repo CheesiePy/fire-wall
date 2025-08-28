@@ -1,5 +1,5 @@
 import e, { Response, Request, NextFunction } from 'express';
-import { getAllRulesService, updateRuleService } from '../models/rule.model';
+import { getAllRulesService, updateRulesService, generateAndStoreRules} from '../models/rule.model';
 
 // standardize response format
 const handleResponse = (res: Response, status: number, message: string, data: any = null) => {
@@ -10,6 +10,14 @@ const handleResponse = (res: Response, status: number, message: string, data: an
     });
 };
 
+export const createRules = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        await generateAndStoreRules();
+        handleResponse(res, 201, 'Rules created successfully');
+    } catch (error) {
+        next(error);
+    }
+};
 
 export const getAllRules = async (req: e.Request, res: Response, next: e.NextFunction) => {
     try {
@@ -21,10 +29,10 @@ export const getAllRules = async (req: e.Request, res: Response, next: e.NextFun
     }
 };
 
-export const updateRule = async (req: Request, res: Response, next: NextFunction) => {
-    const { rule, list, ids, active } = req.body;
+export const updateRules = async (req: Request, res: Response, next: NextFunction) => {
+    const { rule_set } = req.body;
     try {
-        const updatedRule = await updateRuleService(rule, list, ids, active);
+        const updatedRule = await updateRuleService(rule_set);
         if (!updatedRule) return handleResponse(res, 404, 'Rule not found');
         handleResponse(res, 200, 'Rule updated successfully', updatedRule);
     } catch (error) {

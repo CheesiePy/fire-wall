@@ -23,4 +23,28 @@ CREATE TABLE IF NOT EXISTS urls (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Note: The 'rules' table is not used in this specific JSON structure.
+WITH generated_rules AS (
+  SELECT
+    json_build_object(
+      'ips', (
+        SELECT json_build_object(
+          'blacklist', COALESCE(json_agg(json_build_object('id', id, 'value', ip)) FILTER (WHERE is_blacklisted = TRUE), '[]'::json),
+          'whitelist', COALESCE(json_agg(json_build_object('id', id, 'value', ip)) FILTER (WHERE is_whitelisted = TRUE), '[]'::json)
+        ) FROM ips
+      ),
+      'urls', (
+        SELECT json_build_object(
+          'blacklist', COALESCE(json_agg(json_build_object('id', id, 'value', url)) FILTER (WHERE is_blacklisted = TRUE), '[]'::json),
+          'whitelist', COALESCE(json_agg(json_build_object('id', id, 'value', url)) FILTER (WHERE is_whitelisted = TRUE), '[]'::json)
+        ) FROM urls
+      ),
+      'ports', (
+        SELECT json_build_object(
+          'blacklist', COALESCE(json_agg(json_build_object('id', id, 'value', port)) FILTER (WHERE is_blacklisted = TRUE), '[]'::json),
+          'whitelist', COALESCE(json_agg(json_build_object('id', id, 'value', port)) FILTER (WHERE is_whitelisted = TRUE), '[]'::json)
+        ) FROM ports
+      )
+    ) AS full_rule_set
+)
+-- This is the final query to execute in your app
+SELECT full_rule_set FROM generated_rules;
