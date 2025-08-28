@@ -4,14 +4,15 @@ import portRoute from './routes/ports';
 import rulesRoute from './routes/rules';
 import urlRoute from './routes/urls';
 import cors from 'cors';
+import logger from './config/logger';
 
 import pool from './config/db';
 import errorHandler from './middleware/errorHandler';
 import { createTables } from './data/createTables';
-
+import  env  from './config/env';
 
 const app: Application = express();
-const PORT = process.env.PORT || 5000;
+const PORT = env.PORT || 5000;
 
 
 //middleware
@@ -40,13 +41,13 @@ createTables();
 
 // postgresql connection
 app.get('/', async (req: Request, res: Response) => {
-  console.log("Connecting to PostgreSQL...");
+  logger.info("Connecting to PostgreSQL...");
   const client = await pool.connect();
   try {
     const result = await client.query('SELECT NOW()');
     res.send(`PostgreSQL connected: ${result.rows[0].now}`);
   } catch (error) {
-    console.error('Error connecting to PostgreSQL:', error);
+    logger.error('Error connecting to PostgreSQL:', error);
     res.status(500).send('Error connecting to PostgreSQL');
   } finally {
     client.release();
@@ -56,5 +57,5 @@ app.get('/', async (req: Request, res: Response) => {
 
 // server running
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  logger.info(`Server is running on http://localhost:${PORT}`);
 });

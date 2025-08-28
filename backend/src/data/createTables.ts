@@ -1,4 +1,5 @@
 import pool from "../config/db";
+import logger from "../config/logger";
 
 const createIpTable = async () => {
   const query = `
@@ -10,7 +11,7 @@ const createIpTable = async () => {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
   `;
-  console.log("IP table created");
+  logger.info("IP table created");
   await pool.query(query);
 };
 
@@ -24,7 +25,7 @@ const createUrlTable = async () => {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
   `;
-  console.log("URL table created");
+  logger.info("URL table created");
   await pool.query(query);
 };
 
@@ -38,7 +39,7 @@ const createPortTable = async () => {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
   `;
-  console.log("Port table created");
+  logger.info("Port table created");
   await pool.query(query);
 };
 
@@ -51,7 +52,7 @@ const createRulesTable = async () => {
     );
   `;
   await pool.query(query);
-  console.log("Rules table created");
+  logger.info("Rules table created");
 }
 
 export const createTables = async () => {
@@ -60,9 +61,9 @@ export const createTables = async () => {
     await createUrlTable();
     await createPortTable();
     await createRulesTable();
-    console.log("All tables created successfully");
+    logger.info("All tables created successfully");
   } catch (error) {
-    console.error("Error creating tables:", error);
+    logger.error("Error creating tables:", error);
   }
 };
 
