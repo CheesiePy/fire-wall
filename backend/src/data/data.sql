@@ -1,0 +1,26 @@
+-- Corrected SQL Syntax
+CREATE TABLE IF NOT EXISTS ips (
+  id SERIAL PRIMARY KEY,
+  ip_address VARCHAR(45) NOT NULL UNIQUE,
+  is_blocked BOOLEAN DEFAULT FALSE,
+  is_whitelisted BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS ports (
+  id SERIAL PRIMARY KEY,
+  port_number INT NOT NULL UNIQUE,
+  is_blocked BOOLEAN DEFAULT FALSE,
+  is_whitelisted BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS urls (
+  id SERIAL PRIMARY KEY,
+  url VARCHAR(255) NOT NULL UNIQUE,
+  is_blocked BOOLEAN DEFAULT FALSE,
+  is_whitelisted BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Note: The 'rules' table is not used in this specific JSON structure.

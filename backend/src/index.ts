@@ -6,6 +6,8 @@ import urlRoute from './routes/urls';
 import cors from 'cors';
 
 import pool from './config/db';
+import errorHandler from './middleware/errorHandler';
+import { createTables } from './data/createTables';
 
 
 const app: Application = express();
@@ -27,8 +29,12 @@ app.use('/api/firewall/url', urlRoute);
 //   res.send('Hello World!');
 // });
 
-// error handling middleware 
+// error handling middleware
+app.use(errorHandler);
 
+// create table before starting server
+
+createTables();
 
 // postgresql connection
 app.get('/', async (req: Request, res: Response) => {
