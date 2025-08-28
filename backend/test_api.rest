@@ -1,0 +1,3 @@
+
+// testing connection to database
+GET http://localhost:5000/

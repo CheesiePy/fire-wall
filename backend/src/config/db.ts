@@ -1,14 +1,21 @@
 import { Pool } from 'pg';
-import dotenv from 'dotenv';
+import envConfig from './env';
+
+const env_variables = envConfig.parsed; // Ensure environment variables are loaded and accessible
 
 
 const pool = new Pool({
-    user: process.env.USER,
-    host: process.env.HOST,
-    database: process.env.DATABASE,
-    password: process.env.PASSWORD,
-    port: Number(process.env.PORT),
-})
+    user: env_variables?.DB_USER,
+    host: env_variables?.DB_HOST,
+    database: env_variables?.DB_NAME,
+    password: env_variables?.DB_PASSWORD,
+    port: Number(env_variables?.DB_PORT)
+});
 
+console.log('Database connection pool created');
+
+pool.on('connect', () => {
+    console.log('Connected to the database');
+});
 
 export default pool;
