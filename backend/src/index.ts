@@ -3,9 +3,7 @@ import ipRoute from './routes/ips';
 import portRoute from './routes/ports';
 import ruleRoute from './routes/rules';
 import urlRoute from './routes/urls';
-import dotenv from 'dotenv';
 
-dotenv.config();
 
 const app: Application = express();
 const PORT = process.env.PORT || 5000;
