@@ -7,7 +7,15 @@ const logger = winston.createLogger(
             winston.format.timestamp(),
             winston.format.json()
         ),
-        transports: [new winston.transports.Console()],
+        transports: [new winston.transports.Console(), 
+            new winston.transports.File({ filename: 'logs/standard.log' })
+        ],
+        exceptionHandlers: [
+            new winston.transports.File({ filename: 'logs/exceptions.log' })
+        ],
+        rejectionHandlers: [
+            new winston.transports.File({ filename: 'logs/rejections.log' })
+        ]
     }
 );
 
