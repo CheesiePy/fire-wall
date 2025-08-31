@@ -22,7 +22,8 @@ const env = Object.freeze({
     DB_HOST: getEnvVariables('DB_HOST'),
     DB_PORT: getEnvVariables('DB_PORT'),
     DB_NAME: getEnvVariables('DB_NAME'),
-    ENV: getEnvVariables('ENV')
+    ENV: getEnvVariables('ENV'),
+    DATABASE_URL: getEnvVariables('DATABASE_URL'),
 });
 
 export default env;

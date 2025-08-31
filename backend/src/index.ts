@@ -11,6 +11,11 @@ import errorHandler from './middleware/errorHandler';
 import { createTables } from './data/createTables';
 import  env  from './config/env';
 
+// drizzle orm - postgres (still working on migration)
+import { drizzle } from 'drizzle-orm/node-postgres';
+const db = drizzle(env.DATABASE_URL!);
+
+
 const app: Application = express();
 const PORT = env.PORT || 5000;
 
@@ -22,21 +27,19 @@ app.use(cors());
 
 // routes
 app.use('/api/firewall/ip', ipRoute);
+
+
+
 app.use('/api/firewall/port', portRoute);
 app.use('/api/firewall/url', urlRoute);
 
 app.use('/api/firewall/rules', rulesRoute);
 
 
-// app.get('/', (req: Request, res: Response) => {
-//   res.send('Hello World!');
-// });
-
 // error handling middleware
 app.use(errorHandler);
 
 // create table before starting server
-
 createTables();
 
 // postgresql connection
