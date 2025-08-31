@@ -7,7 +7,7 @@ import { and, eq } from 'drizzle-orm';
 
 // Function to get all IPs (this should not exist)
 export const getAllIpsService = async () => {
-    const result = await db.select().from(ips.table);
+    const result = await db.select().from(ips);
     return result;
 };
 
@@ -21,7 +21,7 @@ export const addIpService = async (values : string[], mode: string) => {
     for (const value of values) {
         if(isValidIp(value)) {
             try {
-                await db.insert(ips.table).values({ ip: value, is_blacklisted, is_whitelisted });
+                await db.insert(ips).values({ ip: value, is_blacklisted, is_whitelisted });
                 valid_ips.push(value);
             } catch (error) {
                 logger.error(`Error adding IP address: ${value}`, error);
@@ -46,11 +46,11 @@ export const deleteIpService = async (values : string[], mode : string) => {
 
     for (const value of values) {
         logger.log('Deleting IP:', value, 'Mode:', mode);
-        await db.delete(ips.table).where(
+        await db.delete(ips).where(
             and(
-                eq(ips.table.ip, value),
-                eq(ips.table.is_blacklisted, is_blacklisted),
-                eq(ips.table.is_whitelisted, is_whitelisted)
+                eq(ips.ip, value),
+                eq(ips.is_blacklisted, is_blacklisted),
+                eq(ips.is_whitelisted, is_whitelisted)
             )
         ).returning();
     }

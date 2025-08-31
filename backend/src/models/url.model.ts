@@ -6,7 +6,7 @@ import { and, eq } from 'drizzle-orm';
 
 // Function to get all URLs (this should not exist)
 export const getAllUrlsService = async () => {
-    return await db.select().from(urls.table);
+    return await db.select().from(urls);
 };
 
 export const addUrlService = async (values: string[], mode: string) => {
@@ -19,7 +19,7 @@ export const addUrlService = async (values: string[], mode: string) => {
     for (const value of values) {
         if (isValidUrl(value)) {
             try {
-                await db.insert(urls.table).values({ url: value, is_blacklisted, is_whitelisted });
+                await db.insert(urls).values({ url: value, is_blacklisted, is_whitelisted });
                 valid_urls.push(value);
             } catch (error) {
                 logger.error(`Error adding URL address: ${value}`, error);
@@ -45,11 +45,11 @@ export const deleteUrlService = async (values: string[], mode: string) => {
 
     for (const value of values) {
         if (isValidUrl(value)) {
-            await db.delete(urls.table).where(
+            await db.delete(urls).where(
                 and(
-                    eq(urls.table.url, value),
-                    eq(urls.table.is_blacklisted, is_blacklisted),
-                    eq(urls.table.is_whitelisted, is_whitelisted)
+                    eq(urls.url, value),
+                    eq(urls.is_blacklisted, is_blacklisted),
+                    eq(urls.is_whitelisted, is_whitelisted)
                 )
             ).returning();
             deleted_urls.push(value);

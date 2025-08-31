@@ -6,7 +6,7 @@ import { and, eq } from 'drizzle-orm';
 
 // Function to get all ports (this should not exist)
 export const getAllPortsService = async () => {
-    const result = await db.select().from(ports.table);
+    const result = await db.select().from(ports);
     return result;
 };
 
@@ -20,7 +20,7 @@ export const addPortService = async (values: string[], mode: string) => {
     for (const value of values) {
         if (isValidPort(value)) {
             try {
-                await db.insert(ports.table).values({ port: value, is_blacklisted, is_whitelisted });
+                await db.insert(ports).values({ port: value, is_blacklisted, is_whitelisted });
                 valid_ports.push(value);
             } catch (error) {
                 logger.error(`Error adding port: ${value}`, error);
@@ -48,11 +48,11 @@ export const deletePortService = async (values: string[], mode: string) => {
 
     for (const value of values) {
         if (isValidPort(value)) {
-            await db.delete(ports.table).where(
+            await db.delete(ports).where(
                 and(
-                    eq(ports.table.port, value),
-                    eq(ports.table.is_blacklisted, is_blacklisted),
-                    eq(ports.table.is_whitelisted, is_whitelisted)
+                    eq(ports.port, value),
+                    eq(ports.is_blacklisted, is_blacklisted),
+                    eq(ports.is_whitelisted, is_whitelisted)
                 )
             ).returning();
             deleted_ports.push(value);

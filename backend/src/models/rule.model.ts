@@ -37,8 +37,8 @@ export const generateAndStoreRules = async () => {
 
   // Store the generated rules in the database 
   if (ruleset) {
-    await db.insert(rules.table).values({ id: 1, rule_set: ruleset }).onConflictDoUpdate({ target: rules.table.id, set: { rule_set: ruleset } });
-  }else{
+    await db.insert(rules).values({ id: 1, rule_set: ruleset }).onConflictDoUpdate({ target: rules.id, set: { rule_set: ruleset } });
+  } else {
     logger.warn('No ruleset generated');
   }
 };
@@ -49,7 +49,7 @@ export const generateAndStoreRules = async () => {
 // Function to get all rules
 export const getAllRulesService = async () => {
   await generateAndStoreRules();
-  const result = await db.select().from(rules.table);
+  const result = await db.select().from(rules);
   return result;
 };
 
@@ -59,9 +59,9 @@ export const updateRulesService = async (rule_set: any) => {
     const updated = [];
 
     const ruleTypes: { [key: string]: { table: any, column: string } } = {
-        ips: {table: ips.table, column: 'ip'},
-        urls: {table: urls.table, column: 'url'},
-        ports: {table: ports.table, column: 'port'},
+        ips: {table: ips, column: 'ip'},
+        urls: {table: urls, column: 'url'},
+        ports: {table: ports, column: 'port'},
     };
 
     for (const ruleType in rule_set) {
