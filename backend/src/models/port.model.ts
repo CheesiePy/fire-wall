@@ -59,7 +59,7 @@ export const deletePortService = async (values: string[], mode: string) => {
             logger.log('Deleting Port:', value, 'Mode:', mode);
         }
     }
-    if (deleted_ports.length === 0) { status = 'error'; }
+    if (deleted_ports.length === 0) { status = 'error ❌'; }
 
     return { type: 'port', mode: mode, values: deleted_ports, status: status };
 };

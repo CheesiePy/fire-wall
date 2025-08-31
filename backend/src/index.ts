@@ -10,6 +10,7 @@ import { db } from './config/db';
 import { sql } from 'drizzle-orm';
 import errorHandler from './middleware/errorHandler';
 import  env  from './config/env';
+import { connectWithRetry } from './utils/dbConnector';
 
 
 const app: Application = express();
@@ -32,21 +33,11 @@ app.use('/api/firewall/rules', rulesRoute);
 app.use(errorHandler);
 
 
-// postgresql connection
-app.get('/', async (req: Request, res: Response) => {
-  logger.info("Connecting to PostgreSQL...");
-  try {
-    const result = await db.execute(sql`SELECT NOW()`);
-    const now = result.rows[0] ? (result.rows[0] as any) : 'Not Available';
-    res.send(`PostgreSQL connected: ${now}`);
-  } catch (error) {
-    logger.error('Error connecting to PostgreSQL:', error);
-    res.status(500).send('Error connecting to PostgreSQL');
-  }
-});
+const startServer = async () => {
+    await connectWithRetry();
+    app.listen(PORT, () => {
+        logger.info(`Server is running on http://localhost:${PORT} 🚀`);
+    });
+};
 
-
-// server running
-app.listen(PORT, () => {
-  logger.info(`Server is running on http://localhost:${PORT}`);
-});
+startServer();

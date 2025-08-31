@@ -14,7 +14,7 @@ export const addUrlService = async (values: string[], mode: string) => {
     const is_whitelisted = mode === 'whitelist';
 
     const valid_urls: string[] = []; // Array to hold valid URLs
-    let status = 'success';
+    let status = 'success ✅';
 
     for (const value of values) {
         if (isValidUrl(value)) {
@@ -22,16 +22,16 @@ export const addUrlService = async (values: string[], mode: string) => {
                 await db.insert(urls).values({ url: value, is_blacklisted, is_whitelisted });
                 valid_urls.push(value);
             } catch (error) {
-                logger.error(`Error adding URL address: ${value}`, error);
-                status = 'partial'; // If any insertion fails, mark status as partial
+                logger.error(`Error adding URL address: ${value} ❌`, error);
+                status = 'partial 🔎'; // If any insertion fails, mark status as partial
             }
         } else {
-            status = 'partial';
-            logger.warn(`Invalid URL address: ${value}`);
+            status = 'partial 🔎';
+            logger.warn(`Invalid URL address: ${value} 🔎`);
         }
     }
 
-    if (valid_urls.length === 0) {status = 'error';}
+    if (valid_urls.length === 0) {status = 'error ❌';}
 
     return { type: 'url', mode: mode, values: valid_urls, status: status };
 };
@@ -41,7 +41,7 @@ export const deleteUrlService = async (values: string[], mode: string) => {
     const is_whitelisted = mode === 'whitelist';
 
     const deleted_urls: string[] = []; // Array to hold deleted URLs
-    let status = 'success';
+    let status = 'success ✅';
 
     for (const value of values) {
         if (isValidUrl(value)) {
@@ -53,13 +53,13 @@ export const deleteUrlService = async (values: string[], mode: string) => {
                 )
             ).returning();
             deleted_urls.push(value);
-            logger.log('Deleting URL:', value, 'Mode:', mode);
+            logger.log('Deleting URL:', value, 'Mode:', mode, 'Status:', 'in progress ⏳');
         } else {
-            logger.warn(`Invalid URL address: ${value}`);
+            logger.warn(`Invalid URL address: ${value} 🔎`);
         }
     }
 
-    if (deleted_urls.length === 0) { status = 'error'; }
+    if (deleted_urls.length === 0) { status = 'error ❌'; }
 
     return { type: 'url', mode: mode, values: deleted_urls, status: status };
 };

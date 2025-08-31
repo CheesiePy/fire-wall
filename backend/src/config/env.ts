@@ -3,13 +3,12 @@ import logger from './logger';
 import {z} from 'zod'; // for later validtaion improvment
 
 dotenv.config();
-logger.info('Environment variables loaded from .env file');
+logger.info('Environment variables loaded from .env file ✅');
 
-const getEnvVariables = (name: string) => 
-    {
-    const value = process.env[name];
+const getEnvVariables = (name: string, defaultValue?: string) => {
+    const value = process.env[name] || defaultValue;
     if (!value) {
-        logger.error(`Environment variable ${name} is not defined`);
+        logger.error(`Environment variable ${name} is not defined ❌`);
     }
     return value;
 };
@@ -24,6 +23,8 @@ const env = Object.freeze({
     DB_NAME: getEnvVariables('DB_NAME'),
     ENV: getEnvVariables('ENV'),
     DATABASE_URL: getEnvVariables('DATABASE_URL'),
+    DB_CONNECTION_INTERVAL: getEnvVariables('DB_CONNECTION_INTERVAL', '5000'),
+    // DEBUG_MODE: getEnvVariables('DEBUG_MODE', 'true')
 });
 
 export default env;

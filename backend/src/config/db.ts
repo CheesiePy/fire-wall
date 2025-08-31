@@ -13,10 +13,10 @@ const pool = new Pool({
     port: Number(env.DB_PORT)
 });
 
-logger.info('Database connection pool created');
+logger.info('Database connection pool created ✅');
 
 pool.on('connect', () => {
-    logger.info('Connected to the database');
+    logger.info('Connected to the database ✅');
 });
 
 export const db = drizzle(pool, { schema });

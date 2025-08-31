@@ -24,8 +24,8 @@ export const addUrl = async (req: Request, res: Response, next: NextFunction) =>
 export const getAllUrls = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const urls = await getAllUrlsService();
-        if (!urls) return handleResponse(res, 404, 'No URLs found');
-        handleResponse(res, 200, 'URLs retrieved successfully', urls);
+        if (!urls) return handleResponse(res, 404, 'No URLs found ❌');
+        handleResponse(res, 200, 'URLs retrieved successfully ✅', urls);
     } catch (error) {
         next(error);
     }
@@ -37,8 +37,8 @@ export const deleteUrl = async(req: Request, res: Response, next: NextFunction) 
     const mode = req.body.mode;
     try {
         const deletedUrl = await deleteUrlService(values, mode);
-        if (!deletedUrl) return handleResponse(res, 404, 'URL not found');
-        handleResponse(res, 200, 'URL deleted successfully', deletedUrl);
+        if (!deletedUrl) return handleResponse(res, 404, 'URL not found ❌');
+        handleResponse(res, 200, 'URL deleted successfully ✅', deletedUrl);
     } catch (error) {
         next(error);
     }

@@ -14,7 +14,7 @@ export const addIp = async (req: Request, res: Response, next: NextFunction) => 
     const {values, mode} = req.body;
     try {
         const newIp = await addIpService(values, mode);
-        handleResponse(res, 201, `IPs added to ${mode} successfully`, newIp);
+        handleResponse(res, 201, `IPs added to ${mode} successfully ✅`, newIp);
     } 
     catch (error) {
         next(error);
@@ -24,7 +24,7 @@ export const addIp = async (req: Request, res: Response, next: NextFunction) => 
 export const getAllIps = async (req: Request, res: Response, next: NextFunction) => {
     try {
     const newIp = await getAllIpsService();
-    handleResponse(res, 200, 'IPs retrieved successfully', newIp);
+    handleResponse(res, 200, 'IPs retrieved successfully ✅', newIp);
     } 
     catch (error) {
         next(error);
@@ -36,8 +36,8 @@ export const deleteIp = async (req: Request, res: Response, next: NextFunction) 
     const mode : string = req.body.mode;
     try {
     const newIp = await deleteIpService(values, mode);
-    if (!newIp) return handleResponse(res, 404, 'IP not found');
-    handleResponse(res, 200, 'IP deleted successfully', newIp);
+    if (!newIp) return handleResponse(res, 404, 'IP not found ❌');
+    handleResponse(res, 200, 'IP deleted successfully ✅', newIp);
     } 
     catch (error) {
         next(error);
