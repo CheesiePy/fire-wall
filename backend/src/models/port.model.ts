@@ -1,9 +1,12 @@
-import pool from '../config/db';
+import {db} from '../config/db';
 import logger from '../config/logger';
 import { isValidPort } from '../utils/validator';
+import {ports} from '../types/schemas';
+import { and, eq } from 'drizzle-orm';
+
 // Function to get all ports (this should not exist)
 export const getAllPortsService = async () => {
-    const result = await pool.query('SELECT * FROM ports');
+    const result = await db.select().from(ports.table);
     return result;
 };
 
@@ -16,8 +19,16 @@ export const addPortService = async (values: string[], mode: string) => {
 
     for (const value of values) {
         if (isValidPort(value)) {
-            valid_ports.push(value);
-            await pool.query('INSERT INTO ports (port, is_blacklisted, is_whitelisted) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING', [value, is_blacklisted, is_whitelisted]);
+            try {
+                await db.insert(ports.table).values({ port: value, is_blacklisted, is_whitelisted });
+                valid_ports.push(value);
+            } catch (error) {
+                logger.error(`Error adding port: ${value}`, error);
+                status = 'partial'; // If any insertion fails, mark status as partial
+            }
+        }else{
+            status = 'partial';
+            logger.warn(`Invalid port: ${value}`);
         }
     }
 
@@ -37,7 +48,13 @@ export const deletePortService = async (values: string[], mode: string) => {
 
     for (const value of values) {
         if (isValidPort(value)) {
-            await pool.query('DELETE FROM ports WHERE port = $1 AND is_blacklisted = $2 AND is_whitelisted = $3 RETURNING *', [value, is_blacklisted, is_whitelisted]);
+            await db.delete(ports.table).where(
+                and(
+                    eq(ports.table.port, value),
+                    eq(ports.table.is_blacklisted, is_blacklisted),
+                    eq(ports.table.is_whitelisted, is_whitelisted)
+                )
+            ).returning();
             deleted_ports.push(value);
             logger.log('Deleting Port:', value, 'Mode:', mode);
         }

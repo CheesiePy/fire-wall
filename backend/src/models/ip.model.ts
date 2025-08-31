@@ -1,11 +1,13 @@
-import pool from '../config/db';
+import {db} from '../config/db';
 import logger from '../config/logger';
 import { isValidIp } from '../utils/validator';
+import { ips } from '../types/schemas';
+import { and, eq } from 'drizzle-orm';
 
 
 // Function to get all IPs (this should not exist)
 export const getAllIpsService = async () => {
-    const result = await pool.query('SELECT * FROM ips');
+    const result = await db.select().from(ips.table);
     return result;
 };
 
@@ -18,9 +20,15 @@ export const addIpService = async (values : string[], mode: string) => {
 
     for (const value of values) {
         if(isValidIp(value)) {
-            valid_ips.push(value);
-            await pool.query('INSERT INTO ips (ip, is_blacklisted, is_whitelisted) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING', [value, is_blacklisted, is_whitelisted]);
+            try {
+                await db.insert(ips.table).values({ ip: value, is_blacklisted, is_whitelisted });
+                valid_ips.push(value);
+            } catch (error) {
+                logger.error(`Error adding IP address: ${value}`, error);
+                status = 'partial'; // If any insertion fails, mark status as partial
+            }
         }else{
+            status = 'partial';
             logger.warn(`Invalid IP address: ${value}`);
         }
     }
@@ -38,7 +46,13 @@ export const deleteIpService = async (values : string[], mode : string) => {
 
     for (const value of values) {
         logger.log('Deleting IP:', value, 'Mode:', mode);
-        await pool.query('DELETE FROM ips WHERE ip = $1 AND is_blacklisted = $2 AND is_whitelisted = $3 RETURNING *', [value, is_blacklisted, is_whitelisted]);
+        await db.delete(ips.table).where(
+            and(
+                eq(ips.table.ip, value),
+                eq(ips.table.is_blacklisted, is_blacklisted),
+                eq(ips.table.is_whitelisted, is_whitelisted)
+            )
+        ).returning();
     }
 
     return { type: 'ip', mode: mode, values: values, status: 'success' };

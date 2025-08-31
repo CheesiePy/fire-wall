@@ -37,3 +37,4 @@ export const rules = {
     createdAt: timestamp('created_at').defaultNow(),
   }),
 }
+

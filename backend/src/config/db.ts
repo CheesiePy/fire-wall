@@ -1,6 +1,8 @@
+import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 import  env  from './env';
 import logger from './logger';
+import * as schema from '../types/schemas';
 
 
 const pool = new Pool({
@@ -17,4 +19,4 @@ pool.on('connect', () => {
     logger.info('Connected to the database');
 });
 
-export default pool;
+export const db = drizzle(pool, { schema });

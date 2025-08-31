@@ -1,11 +1,12 @@
-import pool from '../config/db';
+import { db } from '../config/db';
 import { isValidUrl } from '../utils/validator';
 import logger from '../config/logger';
+import { urls } from '../types/schemas';
+import { and, eq } from 'drizzle-orm';
 
 // Function to get all URLs (this should not exist)
 export const getAllUrlsService = async () => {
-    const result = await pool.query('SELECT * FROM urls');
-    return result;
+    return await db.select().from(urls.table);
 };
 
 export const addUrlService = async (values: string[], mode: string) => {
@@ -13,17 +14,26 @@ export const addUrlService = async (values: string[], mode: string) => {
     const is_whitelisted = mode === 'whitelist';
 
     const valid_urls: string[] = []; // Array to hold valid URLs
+    let status = 'success';
 
     for (const value of values) {
         if (isValidUrl(value)) {
-            valid_urls.push(value);
-            await pool.query('INSERT INTO urls (url, is_blacklisted, is_whitelisted) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING', [value, is_blacklisted, is_whitelisted]);
+            try {
+                await db.insert(urls.table).values({ url: value, is_blacklisted, is_whitelisted });
+                valid_urls.push(value);
+            } catch (error) {
+                logger.error(`Error adding URL address: ${value}`, error);
+                status = 'partial'; // If any insertion fails, mark status as partial
+            }
         } else {
+            status = 'partial';
             logger.warn(`Invalid URL address: ${value}`);
         }
     }
 
-    return { type: 'url', mode: mode, values: valid_urls, status: 'success' };
+    if (valid_urls.length === 0) {status = 'error';}
+
+    return { type: 'url', mode: mode, values: valid_urls, status: status };
 };
 
 export const deleteUrlService = async (values: string[], mode: string) => {
@@ -35,7 +45,13 @@ export const deleteUrlService = async (values: string[], mode: string) => {
 
     for (const value of values) {
         if (isValidUrl(value)) {
-            await pool.query('DELETE FROM urls WHERE url = $1 AND is_blacklisted = $2 AND is_whitelisted = $3 RETURNING *', [value, is_blacklisted, is_whitelisted]);
+            await db.delete(urls.table).where(
+                and(
+                    eq(urls.table.url, value),
+                    eq(urls.table.is_blacklisted, is_blacklisted),
+                    eq(urls.table.is_whitelisted, is_whitelisted)
+                )
+            ).returning();
             deleted_urls.push(value);
             logger.log('Deleting URL:', value, 'Mode:', mode);
         } else {

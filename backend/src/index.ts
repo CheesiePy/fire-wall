@@ -6,14 +6,10 @@ import urlRoute from './routes/urls';
 import cors from 'cors';
 import logger from './config/logger';
 
-import pool from './config/db';
+import { db } from './config/db';
+import { sql } from 'drizzle-orm';
 import errorHandler from './middleware/errorHandler';
-import { createTables } from './data/createTables';
 import  env  from './config/env';
-
-// drizzle orm - postgres (still working on migration)
-import { drizzle } from 'drizzle-orm/node-postgres';
-const db = drizzle(env.DATABASE_URL!);
 
 
 const app: Application = express();
@@ -27,33 +23,25 @@ app.use(cors());
 
 // routes
 app.use('/api/firewall/ip', ipRoute);
-
-
-
 app.use('/api/firewall/port', portRoute);
 app.use('/api/firewall/url', urlRoute);
-
 app.use('/api/firewall/rules', rulesRoute);
 
 
 // error handling middleware
 app.use(errorHandler);
 
-// create table before starting server
-createTables();
 
 // postgresql connection
 app.get('/', async (req: Request, res: Response) => {
   logger.info("Connecting to PostgreSQL...");
-  const client = await pool.connect();
   try {
-    const result = await client.query('SELECT NOW()');
-    res.send(`PostgreSQL connected: ${result.rows[0].now}`);
+    const result = await db.execute(sql`SELECT NOW()`);
+    const now = result.rows[0] ? (result.rows[0] as any) : 'Not Available';
+    res.send(`PostgreSQL connected: ${now}`);
   } catch (error) {
     logger.error('Error connecting to PostgreSQL:', error);
     res.status(500).send('Error connecting to PostgreSQL');
-  } finally {
-    client.release();
   }
 });
 

@@ -1,4 +1,7 @@
-import pool from '../config/db';
+import {db} from '../config/db';
+import logger from '../config/logger';
+import {ips, urls, ports, rules} from '../types/schemas';
+import { inArray, eq } from 'drizzle-orm';
 
 
 const GENERATE_RULES_QUERY = `
@@ -29,11 +32,15 @@ const GENERATE_RULES_QUERY = `
 `;
 
 export const generateAndStoreRules = async () => {
-  const result = await pool.query(GENERATE_RULES_QUERY);
-  const rules = result.rows[0].full_rule_set;
+  const result = await db.execute(GENERATE_RULES_QUERY);
+  const ruleset = result.rows[0]?.full_rule_set;
 
-  // Store the generated rules in the database
-    await pool.query(`INSERT INTO rules (id, rule_set) VALUES (1, $1) ON CONFLICT (id) DO UPDATE SET rule_set = $1;`, [rules]);
+  // Store the generated rules in the database 
+  if (ruleset) {
+    await db.insert(rules.table).values({ id: 1, rule_set: ruleset }).onConflictDoUpdate({ target: rules.table.id, set: { rule_set: ruleset } });
+  }else{
+    logger.warn('No ruleset generated');
+  }
 };
 
 
@@ -42,7 +49,7 @@ export const generateAndStoreRules = async () => {
 // Function to get all rules
 export const getAllRulesService = async () => {
   await generateAndStoreRules();
-  const result = await pool.query('SELECT * FROM rules');
+  const result = await db.select().from(rules.table);
   return result;
 };
 
@@ -51,10 +58,10 @@ export const updateRulesService = async (rule_set: any) => {
 
     const updated = [];
 
-    const ruleTypes: { [key: string]: string } = {
-        ips: 'ip',
-        urls: 'url',
-        ports: 'port',
+    const ruleTypes: { [key: string]: { table: any, column: string } } = {
+        ips: {table: ips.table, column: 'ip'},
+        urls: {table: urls.table, column: 'url'},
+        ports: {table: ports.table, column: 'port'},
     };
 
     for (const ruleType in rule_set) {
@@ -66,18 +73,13 @@ export const updateRulesService = async (rule_set: any) => {
             }
 
             const columnToUpdate = mode === 'blacklist' ? 'is_blacklisted' : 'is_whitelisted';
-            const tableName = ruleType;
-            const valueColumn = ruleTypes[ruleType];
+            const { table, column } = ruleTypes[ruleType];
 
-            const query = `
-              UPDATE ${tableName}
-              SET ${columnToUpdate} = $1
-              WHERE id = ANY($2::int[])
-              RETURNING id, ${valueColumn} AS value;
-              `;
-
-            const result = await pool.query(query, [active, ids]);
-            for (const row of result.rows) {
+            const result = await db.update(table)
+              .set({ [columnToUpdate]: active })
+              .where(inArray(table.id, ids))
+              .returning({id : table.id, value: table[column]});
+            for (const row of result) {
                 updated.push({ ...row, active });
             }
         }
@@ -88,54 +90,3 @@ export const updateRulesService = async (rule_set: any) => {
 
     return { updated };
 };
-
-
-/**
- * rule table looks like this : 
- { 
-  "ips": { 
-    "blacklist": [ 
-      { "id": 1, "value": "1.1.1.1" } 
-    ], 
-    "whitelist": [ 
-      { "id": 2, "value": "9.9.9.9" } 
-    ] 
-  }, 
-  "urls": { 
-    "blacklist": [ 
-      { "id": 3, "value": "bad.com" } 
- 
-    ], 
-    "whitelist": [] 
-  }, 
-  "ports": { 
-    "blacklist": [ 
-      { "id": 4, "value": 22 }, 
-      { "id": 5, "value": 23 } 
-    ], 
-    "whitelist": [ 
-      { "id": 6, "value": 443 } 
-    ] 
-  } 
-}
-
-
-Toggle Rule Activation Status 
-- Endpoint UPDATE /api/firewall/rules 
-- Description Removes one or more domain names from the blacklist or whitelist. 
-- Request Body 
-{ 
-urls: {"ids": [3, 7], "mode": "blacklist", "active": false}, 
-ports {"ids": [13, 72], "mode": "blacklist", "active": true} 
-ips {} 
-} 
-- Response 
-{ 
-  "updated": [ 
-    { "id": 3, "value": "bad.com", "active": false }, 
-    { "id": 7, "value": "phishing.net", "active": false } 
-  ] 
-} 
- 
-- 
- */
