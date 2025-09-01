@@ -1,0 +1,76 @@
+/* frontend/src/app/firewall-rules/FirewallRules.css */
+
+.rulesContainer {
+  width: 90%;
+  margin: 2rem auto;
+  font-family: sans-serif;
+}
+
+.rulesTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.rulesTable th, .rulesTable td {
+  padding: 12px 15px;
+  text-align: left;
+}
+
+.rulesTable thead th {
+  background-color: #333;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.rulesTable tbody tr {
+  border-bottom: 1px solid #3d3c3c;
+}
+
+.rulesTable tbody tr:nth-of-type(even) {
+  background-color: #8c8c8c;
+}
+
+.rulesTable tbody tr:last-of-type {
+  border-bottom: 2px solid #333;
+}
+
+.rulesTable tbody tr:hover {
+  background-color: #3332323d;
+}
+
+.listTypeCell {
+  font-weight: bold;
+  padding: 8px 12px;
+  border-radius: 5px;
+  color: #fff;
+  text-align: center;
+}
+
+.blacklist {
+  background-color: #d9534f; /* Red for blacklist */
+}
+
+.whitelist {
+  background-color: #5cb85c; /* Green for whitelist */
+}
+
+.categoryTitle {
+  font-size: 2rem;
+  color: #757575;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #333;
+  padding-bottom: 0.5rem;
+}
+
+.noRulesMessage {
+  padding: 15px;
+  background-color: #f0f0f0;
+  text-align: center;
+  color: #555;
+}
