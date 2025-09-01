@@ -4,7 +4,7 @@ export const isValidUrl = (url : string) : boolean => {
     // .something (required) (.net | .com | .org | .info | .biz | .co.il .ect)
     // if protocol is present then :// must be present
     const protocolRegex = /^(ftp|http|https):\/\//; // 
-    const domainRegex = /^[^ "]+$/;
+    const domainRegex = /^[^ "]+$.*\.(net|com|org|info|biz|co\.il)$/;
     if (url.includes('://')) {
         const domainPart = url.split('://')[1] ?? '';
         return protocolRegex.test(url) && domainRegex.test(domainPart);

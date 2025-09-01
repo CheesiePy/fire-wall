@@ -55,7 +55,6 @@ export const getAllRulesService = async () => {
 
 export const updateRulesService = async (rule_set: any) => {
 
-
     const updated = [];
 
     const ruleTypes: { [key: string]: { table: any, column: string } } = {
