@@ -9,15 +9,22 @@ nav {
 
 ul {
   list-style: none;
+  margin: 0;
+  padding: 0;
+  justify-self: center;
   display: flex;
-  gap: 1rem;
+  gap: 2rem;
 }
 
 a {
   color: var(--link-color);
   text-decoration: none;
+  /* text size */
+  font-size: 1rem;
+  padding-top : 3rem;
 }
 
 a:hover {
   text-decoration: underline;
+  font-size: 1.25rem;
 }

@@ -1,12 +1,14 @@
 import Link from "next/link";
+import Image from "next/image";
 import "./NavBar.css";
+
 
 const NavBar = () => {
   return (
     <nav>
       <ul>
         <li>
-          <p>Logo</p>
+          <Link href="/"><Image src="/firewall_logo.svg" alt="Logo" width={50} height={50} /></Link>
         </li>
         <li>
           <Link href="/overview">Overview</Link>
@@ -30,7 +32,7 @@ const NavBar = () => {
           <Link href="/profile">Profile</Link>
         </li>
         <li>
-          <Link href="/">some-icon</Link>
+
         </li>
       </ul>
     </nav>
