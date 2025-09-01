@@ -8,7 +8,7 @@
     "dev": "nodemon --watch src --exec ts-node src/index.ts",
     "build": "tsc -p .",
     "install": "tsc -p .",
-    "test": "jest --coverage"
+    "test": "jest -c jest.config.ts" 
   },
   "author": "May Lindenberg",
   "license": "ISC",
@@ -20,6 +20,7 @@
     "@types/pg": "^8.15.5",
     "jest": "^30.1.1",
     "nodemon": "^3.1.10",
+    "ts-jest": "^29.4.1",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.5",
     "typescript": "^5.9.2"

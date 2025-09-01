@@ -3,13 +3,12 @@ export const isValidUrl = (url : string) : boolean => {
     // protocol (optional)
     // .something (required) (.net | .com | .org | .info | .biz | .co.il .ect)
     // if protocol is present then :// must be present
-    const protocolRegex = /^(ftp|http|https):\/\//; // 
-    const domainRegex = /^[^ "]+$.*\.(net|com|org|info|biz|co\.il)$/;
-    if (url.includes('://')) {
-        const domainPart = url.split('://')[1] ?? '';
-        return protocolRegex.test(url) && domainRegex.test(domainPart);
+    const urlRegexWithProtocol = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/;
+    const urlRegexWithoutProtocol = /^(?:www\.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+(?:\/[\+~%\/.\w_-]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:\w*)?$/;
+    if (url.includes("://")) {
+        return urlRegexWithProtocol.test(url);
     } else {
-        return domainRegex.test(url);
+        return urlRegexWithoutProtocol.test(url);
     }
 }
 
