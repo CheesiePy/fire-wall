@@ -23,7 +23,6 @@ const env = Object.freeze({
     ENV: getEnvVariables('ENV'),
     DATABASE_URL: getEnvVariables('DATABASE_URL'),
     DB_CONNECTION_INTERVAL: getEnvVariables('DB_CONNECTION_INTERVAL', '5000'),
-    // DEBUG_MODE: getEnvVariables('DEBUG_MODE', 'true')
 });
 
 export default env;

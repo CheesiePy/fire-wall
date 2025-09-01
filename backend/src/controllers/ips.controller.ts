@@ -14,7 +14,7 @@ export const addIp = async (req: Request, res: Response, next: NextFunction) => 
     const {values, mode} = req.body;
     try {
         const newIp = await addIpService(values, mode);
-        handleResponse(res, 201, `IPs added to ${mode} successfully ✅`, newIp);
+        handleResponse(res, 201, `IPs [${newIp.values.join(', ')}] added to ${mode} successfully ✅`, newIp);
     } 
     catch (error) {
         next(error);

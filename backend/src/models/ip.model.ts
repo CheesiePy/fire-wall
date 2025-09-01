@@ -34,7 +34,7 @@ export const addIpService = async (values : string[], mode: string) => {
     }
     // if none of the values were valid turn status to error
     if (valid_ips.length === 0) {
-        status = 'error ❌';
+        status = 'error ❌ No valid IPs provided';
     }
 
     return { type: 'ip', mode: mode, values: valid_ips, status: status };

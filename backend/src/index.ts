@@ -1,8 +1,8 @@
 import express , {Application, Request, Response, NextFunction} from 'express';
-import ipRoute from './routes/ips';
-import portRoute from './routes/ports';
-import rulesRoute from './routes/rules';
-import urlRoute from './routes/urls';
+import ipRoute from './routes/ips.route';
+import portRoute from './routes/ports.route';
+import rulesRoute from './routes/rules.route';
+import urlRoute from './routes/urls.route';
 import cors from 'cors';
 import logger from './config/logger';
 

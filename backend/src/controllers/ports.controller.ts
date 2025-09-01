@@ -24,7 +24,7 @@ export const addPort = async (req: Request, res: Response, next: NextFunction) =
     try {
         const newPort = await addPortService(values, mode);
         if (!newPort) return handleResponse(res, 400, 'Failed to add port ❌');
-        handleResponse(res, 201, 'Port added successfully ✅', newPort);
+        handleResponse(res, 201, `Port [${newPort.values.join(', ')}] added successfully ✅`, newPort);
     } catch (error) {
         next(error);
     }

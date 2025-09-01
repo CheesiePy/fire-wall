@@ -15,7 +15,7 @@ export const addPortService = async (values: string[], mode: string) => {
     const is_whitelisted = mode === 'whitelist';
 
     const valid_ports: string[] = []; // Array to hold valid ports
-    let status = 'success';
+    let status = 'success ✅';
 
     for (const value of values) {
         if (isValidPort(value)) {
@@ -23,17 +23,17 @@ export const addPortService = async (values: string[], mode: string) => {
                 await db.insert(ports).values({ port: value, is_blacklisted, is_whitelisted });
                 valid_ports.push(value);
             } catch (error) {
-                logger.error(`Error adding port: ${value}`, error);
-                status = 'partial'; // If any insertion fails, mark status as partial
+                logger.error(`Error adding port: ${value} 🔎`, error);
+                status = 'partial 🔎'; // If any insertion fails, mark status as partial
             }
         }else{
-            status = 'partial';
-            logger.warn(`Invalid port: ${value}`);
+            status = 'partial 🔎';
+            logger.warn(`Invalid port: ${value} 🔎`);
         }
     }
 
     if (valid_ports.length === 0) {
-        status = 'error';
+        status = 'error ❌ No valid ports found';
     }
 
     return { type: 'port', mode: mode, values: valid_ports, status: status };
@@ -44,7 +44,7 @@ export const deletePortService = async (values: string[], mode: string) => {
     const is_whitelisted = mode === 'whitelist';
 
     const deleted_ports: string[] = []; // Array to hold deleted ports
-    let status = 'success';
+    let status = 'success ';
 
     for (const value of values) {
         if (isValidPort(value)) {
@@ -59,7 +59,7 @@ export const deletePortService = async (values: string[], mode: string) => {
             logger.log('Deleting Port:', value, 'Mode:', mode);
         }
     }
-    if (deleted_ports.length === 0) { status = 'error ❌'; }
+    if (deleted_ports.length === 0) { status = 'error ❌ No valid ports found'; }
 
     return { type: 'port', mode: mode, values: deleted_ports, status: status };
 };

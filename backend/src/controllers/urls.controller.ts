@@ -15,7 +15,7 @@ export const addUrl = async (req: Request, res: Response, next: NextFunction) =>
     const mode = req.body.mode;
     try {
         const newUrl = await addUrlService(values, mode);
-        handleResponse(res, 201, 'URL added successfully', newUrl);
+        handleResponse(res, 201, `URL [${newUrl.values.join(', ')}] added successfully ✅`, newUrl);
     } catch (error) {
         next(error);
     }

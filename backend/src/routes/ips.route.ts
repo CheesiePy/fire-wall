@@ -1,5 +1,6 @@
 import express, {Request, Response} from 'express';
 import { addIp, deleteIp, getAllIps } from '../controllers/ips.controller';
+import { validateIps } from '../middleware/inputValidator';
 
 const router : express.Router = express.Router();
 
@@ -8,7 +9,7 @@ const router : express.Router = express.Router();
 router.get('/', getAllIps);
 
 // post app ip (Adds one or more IPs to the blacklist or whitelist.)
-router.post('/', addIp);
+router.post('/', validateIps, addIp);
 
 // remove ip (Removes one or more IPs from the blacklist or whitelist.)
 router.delete('/', deleteIp);

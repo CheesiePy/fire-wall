@@ -1,5 +1,6 @@
 import express, {Request, Response} from 'express';
 import { deleteUrl, getAllUrls, addUrl} from '../controllers/urls.controller';
+import {validateUrls} from '../middleware/inputValidator';
 
 const router : express.Router = express.Router();
 
@@ -8,8 +9,8 @@ const router : express.Router = express.Router();
 router.get('/', getAllUrls);
 
 // post app url (Adds one or more domain names to the blacklist or whitelist)
-router.post('/', addUrl);
-  
+router.post('/', /*validateUrls,*/ addUrl);
+
 // remove url (Removes one or more domain names from the blacklist or whitelist.)
 router.delete('/', deleteUrl);
 

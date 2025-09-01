@@ -59,7 +59,7 @@ export const deleteUrlService = async (values: string[], mode: string) => {
         }
     }
 
-    if (deleted_urls.length === 0) { status = 'error ❌'; }
+    if (deleted_urls.length === 0) { status = 'error ❌ No valid URLs found'; }
 
     return { type: 'url', mode: mode, values: deleted_urls, status: status };
 };
