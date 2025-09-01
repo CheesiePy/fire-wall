@@ -1,6 +1,5 @@
 import dotenv from 'dotenv';
 import logger from './logger';
-import {z} from 'zod'; // for later validtaion improvment
 
 dotenv.config();
 logger.info('Environment variables loaded from .env file ✅');

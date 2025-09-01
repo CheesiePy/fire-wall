@@ -1,4 +1,4 @@
-import winston, { format } from 'winston';
+import winston, { format , transports} from 'winston';
 
 
 const logger = winston.createLogger(
@@ -9,16 +9,14 @@ const logger = winston.createLogger(
             format.json()
         ),
         transports: [
-            new winston.transports.Console(), 
-            new winston.transports.File({ filename: 'logs/standard.log' })
+            new transports.Console(), 
+            new transports.File({ filename: 'logs/standard.log' })
         ],
         exceptionHandlers: [
-            new winston.transports.Console(),
-            new winston.transports.File({ filename: 'logs/exceptions.log' })
+            new transports.File({ filename: 'logs/exceptions.log' })
         ],
         rejectionHandlers: [
-            new winston.transports.Console(),
-            new winston.transports.File({ filename: 'logs/rejections.log' })
+            new transports.File({ filename: 'logs/rejections.log' })
         ]
     }
 );
