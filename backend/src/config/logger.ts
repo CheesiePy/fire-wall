@@ -4,9 +4,9 @@ import winston, { format } from 'winston';
 const logger = winston.createLogger(
     {
         level: 'info',
-        format: winston.format.combine(
-            winston.format.timestamp(),
-            winston.format.json()
+        format: format.combine(
+            format.timestamp(),
+            format.json()
         ),
         transports: [
             new winston.transports.Console(), 
