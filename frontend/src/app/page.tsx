@@ -5,7 +5,8 @@ export default function Home() {
     <div>
       <h1>Welcome to FireWall</h1>
       <p>Your one-stop solution for all firewall needs.</p>
-      {/* <Image src="/images/firewall.png" alt="Firewall" width={500} height={300} /> */}
+      <Image src="/firewall_logo.png" alt="Firewall" width={500} height={300} />
     </div>
   );
 }
+

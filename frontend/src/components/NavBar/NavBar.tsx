@@ -8,7 +8,7 @@ const NavBar = () => {
     <nav>
       <ul>
         <li>
-          <Link href="/"><Image src="/firewall_logo.svg" alt="Logo" width={50} height={50} /></Link>
+          <Link href="/"><Image src="/firewall_logo.png" alt="Logo" width={70} height={70} /></Link>
         </li>
         <li>
           <Link href="/overview">Overview</Link>
